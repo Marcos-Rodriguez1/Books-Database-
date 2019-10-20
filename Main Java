@@ -1,0 +1,186 @@
+import java.sql.*;
+import java.util.Scanner;
+
+public class testing1 { // JDBC driver name and database URL
+   static final String JDBC_DRIVER = "org.apache.derby.jdbc.ClientDriver";
+   static final String DB_URL = "jdbc:derby://localhost:1527/sqlPractice1";
+
+   //  Database credentials
+   static final String USER = "user001";
+   static final String PASS = "PASS";
+
+   public static void main(String[] args) throws SQLException {
+   Connection conn = null;
+   PreparedStatement stmt = null;
+   
+   try {
+   //STEP 2: Register JDBC driver
+      Class.forName(JDBC_DRIVER);
+
+      //STEP 3: Open a connection
+      System.out.println("Connecting to database...");
+      conn = DriverManager.getConnection(DB_URL,USER,PASS);
+      
+      
+      System.out.println("Connected database successfully...");
+      
+      //STEP 4: Execute a query
+      System.out.println("Creating table...");
+      //stmt = conn.createStatement();
+      String publisherNameUser = "DoubleDay";
+      String sql = "SELECT * FROM WRITINGGROUPS NATURAL JOIN PUBLISHERS NATURAL JOIN BOOKS WHERE publisherName = ?";  
+      
+      stmt = conn.prepareStatement(sql);
+      stmt.setString(1, publisherNameUser);
+      
+      ResultSet rs = stmt.executeQuery();
+      
+       System.out.println("Printing out info");
+      while(rs.next())
+      {
+          
+         String group_name = rs.getString("GroupName");
+         String head_writer = rs.getString("HeadWriter");
+                    String year_formed = rs.getString("YearFormed");
+                    String subject = rs.getString("Subject");
+                    String book_title = rs.getString("BookTitle");
+                    String publisher_name = rs.getString("PublisherName");
+                    String year_published = rs.getString("YearPublished");
+                    String number_pages = rs.getString("NumberPages");
+                    String publisher_address = rs.getString("PublisherAddress");
+                    String publisher_phone = rs.getString("PublisherPhone");
+                    String publisher_email = rs.getString("PublisherEmail");
+    
+                    System.out.print("GroupName: " + group_name);
+                    System.out.print(", HeadWriter: " + head_writer);
+                    System.out.print(", year_formed: " + year_formed);
+                    System.out.print(", subject: " + subject);
+                    System.out.print(", Book title: " + book_title);
+                    System.out.print(", Publisher name: " + publisher_name);
+                    System.out.print("Year published: " + year_published);
+                    System.out.print("Number pages: " + number_pages);
+                    System.out.print("Publisher address: " + publisher_address);
+                    System.out.print("Publisher phone: " + publisher_phone);
+                    System.out.println("Publisher email: " + publisher_email);   
+                    
+         
+          /*
+          System.out.print("GroupName: " + rs.getString(1) + "   " );
+          System.out.print("Publisher Name: " + rs.getString(2) + "   " );
+          System.out.print("Head Writer: " + rs.getString(3) + "   " );
+          System.out.print("Year Formed: " + rs.getInt(4) + "   " );
+          System.out.print("Subject: " + rs.getString(5) + "   " );
+          System.out.print("Publisher Address: " + rs.getString(6) + "   " );
+          System.out.print("Publisher Phone: " + rs.getString(7) + "   " );
+          System.out.print("Publisher Email: " + rs.getString(8) + "   " );
+          System.out.print("Book Title: " + rs.getString(9) + "   " );
+          System.out.print("Year Published: " + rs.getInt(10) + "   " );
+          System.out.println("Number of Pages: " + rs.getInt(11) + "   " );
+      */
+      
+      }
+      
+       System.out.println("Exiting print");
+      
+      
+      /*
+     ///////////////////////////////////////////////////////////////////// CLEARS THE TABLES 
+     String sql = "DROP TABLE WritingGroups";
+     stmt.executeUpdate(sql);
+     
+     sql = "DROP TABLE Publishers";
+     stmt.executeUpdate(sql);
+     
+     sql = "DROP TABLE Books";
+     stmt.executeUpdate(sql);
+     ///////////////////////////////////////////////////////////////////////////////////////////
+      
+     
+      
+     sql = "CREATE TABLE WritingGroups " +
+                   "(groupName VARCHAR(255) NOT NULL, " +
+                   " headWriter VARCHAR(255) NOT NULL, " +
+                   " yearFormed INT , " +
+                   " subject VARCHAR(255), " +
+                   " CONSTRAINT pk_groupName PRIMARY KEY (groupName))";
+      
+      
+     stmt.executeUpdate(sql);
+      System.out.println("Created writing group table");
+      
+      sql = "Create TABLE Publishers " +
+              " (publisherName VARCHAR(255) NOT NULL, " +
+              " publisherAddress VARCHAR(255) NOT NULL, " +
+              " publisherPhone VARCHAR(255) NOT NULL, " + 
+              " publisherEmail VARCHAR(255) NOT NULL, " +
+              " CONSTRAINT pk_publisherName PRIMARY KEY (publisherName))";
+      
+      stmt.executeUpdate(sql);
+       System.out.println("Created publishers table");
+       
+       sql = "CREATE TABLE Books " +
+               " (bookTitle VARCHAR(255) NOT NULL, " + 
+               " yearPublished INT, " +
+               " numberPages INT, " +
+               " groupName VARCHAR(255) NOT NULL, "+
+               " publisherName VARCHAR(255) NOT NULL, " + 
+               " CONSTRAINT groupName_FK FOREIGN KEY (groupName) REFERENCES WritingGroups (groupName), " +
+               " CONSTRAINT publisherName_FK FOREIGN KEY (publisherName) REFERENCES Publishers (publisherName), " +
+               " CONSTRAINT pk_gName_bTitle PRIMARY KEY (groupName, bookTitle))";
+       
+       stmt.executeUpdate(sql);
+       System.out.println("Created Books Table");
+       
+      */
+      /*  
+      ResultSet rs = stmt.executeQuery(sql);
+
+      //STEP 5: Extract data from result set
+      while(rs.next()){
+         //Retrieve by column name
+         String id  = rs.getString("au_id");
+         String phone = rs.getString("phone");
+         String first = rs.getString("au_fname");
+         String last = rs.getString("au_lname");
+
+         //Display values
+         System.out.print("ID: " + id);
+         System.out.print(", First: " + first);
+         System.out.print(", Last: " + last);
+         System.out.println(", Phone: " + phone);
+      }
+      
+     
+      //STEP 6: Clean-up environment
+      
+       */
+       //rs.close();
+      
+      rs.close();
+      stmt.close();
+      conn.close();
+   }catch(SQLException se){
+      //Handle errors for JDBC
+      se.printStackTrace();
+   }catch(Exception e){
+      //Handle errors for Class.forName
+      e.printStackTrace();
+   }finally{
+      //finally block used to close resources
+      try{
+         if(stmt!=null)
+            stmt.close();
+      }catch(SQLException se2){
+      }// nothing we can do
+      try{
+         if(conn!=null)
+            conn.close();
+      }catch(SQLException se){
+         se.printStackTrace();
+      }//end finally try
+   }//end try
+   System.out.println("Goodbye!");
+}//end main
+}//end FirstExample
+ 
+   
