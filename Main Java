@@ -10,6 +10,7 @@ public class testing1 { // JDBC driver name and database URL
    //  Database credentials
    static final String USER = "user002";
    static final String PASS = "PASS";
+   static final int MYSQL_DUPLICATE_PK = 1062;
    
    ////////////////////////
      static String group_name;
@@ -422,6 +423,153 @@ public static void listOneBookInfo() throws SQLException
       
 
 }
+public static void seven() {
+        Connection conn = null;
+        Statement stmt = null;
+        Scanner myObj = new Scanner(System.in);  // Create a Scanner object
+        //Assuming that users always enter a group that exists in our table
+        System.out.println("Enter group name: ");
+
+        String groupName = myObj.nextLine();  // Read user input
+        System.out.println("GroupName is: " + groupName); // Output user input
+        try {
+            Class.forName(JDBC_DRIVER);
+
+            //STEP 3: Open a connection
+            //System.out.println("Connecting to database...");
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            //Check if group name exists
+            String check_query = "select groupName from WritingGroups where groupName = ?";
+            PreparedStatement check_stmt = conn.prepareStatement(check_query);
+            check_stmt.setString(1, groupName);
+            ResultSet result = check_stmt.executeQuery();
+            if (!result.next()) {
+                System.out.println("Group name " + groupName + "does not exist");
+                return;
+            }
+            // extract data from the ResultSe
+        }catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException se2) {
+            }// nothing we can do
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }//end finally try
+        }//end try
+        System.out.println("Enter publisher: ");
+        String publisher = myObj.nextLine();
+        System.out.println("Publisher name is: "+  publisher);
+        try {
+            Class.forName(JDBC_DRIVER);
+
+            //STEP 3: Open a connection
+            //System.out.println("Connecting to database...");
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            //Check if group name exists
+            String check_query = "select publisherName from Publishers where publisherName = ?";
+            PreparedStatement check_stmt = conn.prepareStatement(check_query);
+            check_stmt.setString(1, publisher);
+            ResultSet result = check_stmt.executeQuery();
+            if (!result.next()) {
+                System.out.println("Publisher name " + publisher + "does not exist");
+                return;
+            }
+            // extract data from the ResultSe
+        }catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException se2) {
+            }// nothing we can do
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }//end finally try
+        }//end try
+        
+        
+        System.out.println("Enter book title: ");
+        String book_title = myObj.nextLine();
+        System.out.println("Enter number of pages: ");
+        String number_of_pages = myObj.nextLine();
+        
+        
+        System.out.println("Enter year published: ");
+        int year_published = myObj.nextInt();
+        try {
+            Class.forName(JDBC_DRIVER);
+
+            //STEP 3: Open a connection
+            //System.out.println("Connecting to database...");
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            //Check if group name exists
+            String query = "insert into books values (?, ?, ?, ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, book_title);
+            pstmt.setInt(2, year_published);
+            pstmt.setInt(3, Integer.parseInt(number_of_pages));
+            pstmt.setString(4, groupName);
+            pstmt.setString(5, publisher);
+            
+            pstmt.executeUpdate();
+            // extract data from the ResultSe
+            System.out.println("New book inserted");
+        }catch (SQLException se) {
+            //Handle errors for JDBC
+            if(se.getErrorCode() == MYSQL_DUPLICATE_PK ){
+                System.out.println("Duplicate primary key, nothing inserted");
+                //duplicate primary key 
+            }
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException se2) {
+            }// nothing we can do
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }//end finally try
+        }//end try
+        
+        
+      
+        
+        
+    }
 
 public static void insertNewBook() throws SQLException ////////////////////////////////////////
 {
