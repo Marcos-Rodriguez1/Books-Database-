@@ -570,6 +570,166 @@ public static void seven() {
         
         
     }
+    public static void eight() {
+        Connection conn = null;
+        Statement stmt = null;
+        boolean flag = false;
+        boolean bought_out_flag = false;
+        String publisher;
+        String bought_out_publisher;
+        Scanner myObj = new Scanner(System.in);
+        do{
+            
+            System.out.println("Enter new publisher : ");
+            publisher = myObj.nextLine();
+            System.out.println("Enter bought publisher: ");
+            bought_out_publisher = myObj.nextLine();
+            try {
+            Class.forName(JDBC_DRIVER);
+
+            //STEP 3: Open a connection
+            //System.out.println("Connecting to database...");
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            //Check if group name exists
+            String check_query = "select publisherName from Publishers where publisherName = ?";
+            String current = "select publisherName from Publishers where publisherName = ?";
+            PreparedStatement check_stmt = conn.prepareStatement(check_query);
+            PreparedStatement second_check = conn.prepareStatement(current);
+            check_stmt.setString(1, publisher);
+            second_check.setString(1, bought_out_publisher);
+            ResultSet result = check_stmt.executeQuery();
+            ResultSet result_two = second_check.executeQuery();
+            if (result.next()) {
+                System.out.println("Publisher name " + publisher + " already exists");
+                //flag = true;
+                //break;
+                //return;
+            }
+            else {
+                flag = true;
+            }
+            if (!result_two.next()) {
+                System.out.println("Bought out publisher named " + bought_out_publisher + " does not exist");
+            }
+            else{
+                bought_out_flag = true;
+            }
+            // extract data from the ResultSe
+        }catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException se2) {
+            }// nothing we can do
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }//end finally try
+        }//end try
+        
+        }while(!flag && !bought_out_flag);
+        //Add publisher to new database
+        System.out.println("Enter publisher address : ");
+        String publisher_address = myObj.nextLine();
+        System.out.println("Enter publisher phone: ");
+        String publisher_phone = myObj.nextLine();
+        System.out.println("Enger publisher email: ");
+        String publisher_email = myObj.nextLine();
+        
+        try {
+            Class.forName(JDBC_DRIVER);
+
+            //STEP 3: Open a connection
+            //System.out.println("Connecting to database...");
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            //Check if group name exists
+            String query = "insert into  publishers values (?, ?, ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, publisher);
+            pstmt.setString(2, publisher_address);
+            pstmt.setString(3, publisher_phone);
+            pstmt.setString(4, publisher_email);
+            
+            pstmt.executeUpdate();
+            
+        }catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException se2) {
+            }// nothing we can do
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }//end finally try
+        }//end try
+        
+        try {
+            Class.forName(JDBC_DRIVER);
+
+            //STEP 3: Open a connection
+            //System.out.println("Connecting to database...");
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            //Check if group name exists
+            String query = "update books set publisherName = ? where publisherName = ?";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, publisher);
+            pstmt.setString(2, bought_out_publisher);
+            
+            
+            pstmt.executeUpdate();
+            
+        }catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException se2) {
+            }// nothing we can do
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }//end finally try
+        }//end try
+        
+        
+        
+        
+        
+    }
+
 
 public static void insertNewBook() throws SQLException ////////////////////////////////////////
 {
