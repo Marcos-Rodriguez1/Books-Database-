@@ -1,3 +1,7 @@
+//JDBC DATABASE PROJECT
+
+//Marcos Rodriguez and Nhat Le
+
 import java.sql.*;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -11,6 +15,7 @@ public class testing1 { // JDBC driver name and database URL
    static final String USER = "user002";
    static final String PASS = "PASS";
    static final int MYSQL_DUPLICATE_PK = 1062;
+   static final int currentYearPlusOne = 2020;
    
    ////////////////////////
      static String group_name;
@@ -19,8 +24,8 @@ public class testing1 { // JDBC driver name and database URL
      static String subject;
      static String book_title;
      static String publisher_name;
-     static String year_published;
-     static String number_pages;
+     static int year_published;
+     static int number_pages;
      static String publisher_address;
      static String publisher_phone;
      static String publisher_email;
@@ -196,8 +201,8 @@ public static void listAllDataForGroup() throws SQLException  //////////////////
          subject = rs.getString("Subject");
          book_title = rs.getString("BookTitle");
          publisher_name = rs.getString("PublisherName");
-         year_published = rs.getString("YearPublished");
-         number_pages = rs.getString("NumberPages");
+         year_published = rs.getInt("YearPublished");
+         number_pages = rs.getInt("NumberPages");
          publisher_address = rs.getString("PublisherAddress");
          publisher_phone = rs.getString("PublisherPhone");
          publisher_email = rs.getString("PublisherEmail");
@@ -280,8 +285,8 @@ public static void listPublisherInfo() throws SQLException   ///////////////////
          subject = rs.getString("Subject");
          book_title = rs.getString("BookTitle");
          publisher_name = rs.getString("PublisherName");
-         year_published = rs.getString("YearPublished");
-         number_pages = rs.getString("NumberPages");
+         year_published = rs.getInt("YearPublished");
+         number_pages = rs.getInt("NumberPages");
          publisher_address = rs.getString("PublisherAddress");
          publisher_phone = rs.getString("PublisherPhone");
          publisher_email = rs.getString("PublisherEmail");
@@ -394,8 +399,8 @@ public static void listOneBookInfo() throws SQLException
          subject = rs.getString("Subject");
          book_title = rs.getString("BookTitle");
          publisher_name = rs.getString("PublisherName");
-         year_published = rs.getString("YearPublished");
-         number_pages = rs.getString("NumberPages");
+         year_published = rs.getInt("YearPublished");
+         number_pages = rs.getInt("NumberPages");
          publisher_address = rs.getString("PublisherAddress");
          publisher_phone = rs.getString("PublisherPhone");
          publisher_email = rs.getString("PublisherEmail");
@@ -423,8 +428,10 @@ public static void listOneBookInfo() throws SQLException
       
 
 }
-public static void seven() {
-        Connection conn = null;
+
+public static void insertNewBook() throws SQLException ////////////////////////////////////////
+{
+    ////////////////////////////////////////////////////////////////////////////////----------------------------------------------------------
         Statement stmt = null;
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
         //Assuming that users always enter a group that exists in our table
@@ -445,6 +452,7 @@ public static void seven() {
             ResultSet result = check_stmt.executeQuery();
             if (!result.next()) {
                 System.out.println("Group name " + groupName + "does not exist");
+                databaseMenu();
                 return;
             }
             // extract data from the ResultSe
@@ -486,6 +494,7 @@ public static void seven() {
             ResultSet result = check_stmt.executeQuery();
             if (!result.next()) {
                 System.out.println("Publisher name " + publisher + "does not exist");
+                databaseMenu();
                 return;
             }
             // extract data from the ResultSe
@@ -519,8 +528,12 @@ public static void seven() {
         String number_of_pages = myObj.nextLine();
         
         
+        do { 
         System.out.println("Enter year published: ");
-        int year_published = myObj.nextInt();
+        year_published = myObj.nextInt();
+        
+        }while(year_published > currentYearPlusOne || year_published < 0);
+        
         try {
             Class.forName(JDBC_DRIVER);
 
@@ -539,10 +552,14 @@ public static void seven() {
             pstmt.executeUpdate();
             // extract data from the ResultSe
             System.out.println("New book inserted");
+            listBookTitles();
+            
+            
         }catch (SQLException se) {
             //Handle errors for JDBC
             if(se.getErrorCode() == MYSQL_DUPLICATE_PK ){
                 System.out.println("Duplicate primary key, nothing inserted");
+                databaseMenu();
                 //duplicate primary key 
             }
         } catch (Exception e) {
@@ -564,15 +581,14 @@ public static void seven() {
                 se.printStackTrace();
             }//end finally try
         }//end try
-        
-        
-      
-        
-        
-    }
-    public static void eight() {
-        Connection conn = null;
-        Statement stmt = null;
+   ////////////////////////////////////////////////////////////////////////////////------------------------------------------------------        
+    
+}
+
+public static void newPubAndUpdate() throws SQLException  /////////////////////////////////////////////////
+{
+    ////////////////////////////////////////
+    Statement stmt = null;
         boolean flag = false;
         boolean bought_out_flag = false;
         String publisher;
@@ -601,9 +617,11 @@ public static void seven() {
             ResultSet result_two = second_check.executeQuery();
             if (result.next()) {
                 System.out.println("Publisher name " + publisher + " already exists");
+                
                 //flag = true;
                 //break;
                 //return;
+                
             }
             else {
                 flag = true;
@@ -638,7 +656,7 @@ public static void seven() {
             }//end finally try
         }//end try
         
-        }while(!flag && !bought_out_flag);
+        }while(!(flag && bought_out_flag));
         //Add publisher to new database
         System.out.println("Enter publisher address : ");
         String publisher_address = myObj.nextLine();
@@ -701,6 +719,8 @@ public static void seven() {
             
             pstmt.executeUpdate();
             
+             databaseMenu();
+            
         }catch (SQLException se) {
             //Handle errors for JDBC
             se.printStackTrace();
@@ -723,24 +743,6 @@ public static void seven() {
                 se.printStackTrace();
             }//end finally try
         }//end try
-        
-        
-        
-        
-        
-    }
-
-
-public static void insertNewBook() throws SQLException ////////////////////////////////////////
-{
-    System.out.println("In case 7");
-    databaseMenu();
-}
-
-public static void newPubAndUpdate() throws SQLException  /////////////////////////////////////////////////
-{
-    System.out.println("In case 8");
-    databaseMenu();
 }
 
 public static void removeBook() throws SQLException
