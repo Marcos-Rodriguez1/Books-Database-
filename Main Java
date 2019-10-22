@@ -8,7 +8,7 @@ public class testing1 { // JDBC driver name and database URL
    static final String DB_URL = "jdbc:derby://localhost:1527/sqlPractice1";
 
    //  Database credentials
-   static final String USER = "user001";
+   static final String USER = "user002";
    static final String PASS = "PASS";
    
    ////////////////////////
@@ -437,8 +437,84 @@ public static void newPubAndUpdate() throws SQLException  //////////////////////
 
 public static void removeBook() throws SQLException
 {
-    System.out.println("In case 9");
-    databaseMenu();
+    String temp, userBookTitle, userGroupName, userPublisherName;
+    
+    temp = "Book Title";
+    
+    userBookTitle = getUserInput(temp);
+    
+    temp = "Group Name";
+    
+    userGroupName = getUserInput(temp);
+    
+    temp = "Publisher Name";
+    
+    userPublisherName = getUserInput(temp);
+    
+    String check_query = "SELECT bookTitle FROM BOOKS where bookTitle = ?";
+            PreparedStatement check_stmt = conn.prepareStatement(check_query);
+            check_stmt.setString(1, userBookTitle);
+            ResultSet result = check_stmt.executeQuery();
+            if (!result.next()) {
+                System.out.println("Book titled  " + userBookTitle + " does not exist");
+                result.close();
+                databaseMenu();
+                return;
+            }
+            
+    
+    check_query = "SELECT groupName FROM WritingGroups NATURAL JOIN BOOKS where groupName = ?";
+            check_stmt = conn.prepareStatement(check_query);
+            check_stmt.setString(1, userGroupName);
+            result = check_stmt.executeQuery();
+            if (!result.next()) {
+                System.out.println("Group name " + userGroupName + "does not exist, , or doesn't match book title " + userBookTitle);
+                result.close();
+                databaseMenu();                
+                return;
+            }
+    
+    check_query = "SELECT publisherName FROM Publishers NATURAL JOIN BOOKS where publisherName = ?";
+            check_stmt = conn.prepareStatement(check_query);
+            check_stmt.setString(1, userPublisherName);
+            result = check_stmt.executeQuery();
+            if (!result.next()) {
+                System.out.println("Publisher Name " + userPublisherName + "does not exist, or doesn't match book title " + userBookTitle);
+                result.close();
+                databaseMenu();
+                return;
+            }
+         
+    String sql = "DELETE FROM BOOKS WHERE bookTitle = ?";
+    PreparedStatement pstmt = null; 
+    pstmt = conn.prepareStatement(sql);
+    pstmt.setString(1, userBookTitle);////////////
+     
+   pstmt.executeUpdate();
+      
+    System.out.println("");
+    System.out.println("Deleted " + userBookTitle);
+    System.out.println("");
+    
+    Statement stmt = conn.createStatement();
+    
+    sql = "SELECT bookTitle FROM BOOKS";  
+    
+    ResultSet rs = stmt.executeQuery(sql);
+
+    System.out.println("/////////////////// Listing All Book Titles ///////////////////");
+    while(rs.next())
+    {
+         String titleBook = rs.getString("bookTitle");
+         System.out.println("Book Title: " + titleBook + " ");
+    }  
+       stmt.close();
+       rs.close();
+       result.close();
+       check_stmt.close();
+       pstmt.close();
+       
+       databaseMenu();
 }
 
 public static String getUserInput(String temp)
